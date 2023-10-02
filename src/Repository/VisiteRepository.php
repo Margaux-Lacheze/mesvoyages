@@ -14,15 +14,13 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Visite[]    findAll()
  * @method Visite[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VisiteRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class VisiteRepository extends ServiceEntityRepository {
+
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Visite::class);
     }
 
-    public function add(Visite $entity, bool $flush = false): void
-    {
+    public function add(Visite $entity, bool $flush = false): void {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
@@ -30,15 +28,14 @@ class VisiteRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Visite $entity, bool $flush = false): void
-    {
+    public function remove(Visite $entity, bool $flush = false): void {
         $this->getEntityManager()->remove($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
         }
     }
-    
+
     /**
      * Retourne toutes les visites triées sur un champ
      * @param type $champ
@@ -47,11 +44,11 @@ class VisiteRepository extends ServiceEntityRepository
      */
     public function findAllOrderBy($champ, $ordre): array {
         return $this->createQueryBuilder('v')
-                ->orderBy('v.' .$champ, $ordre)
-                ->getQuery()
-                ->getResult();
+                        ->orderBy('v.' . $champ, $ordre)
+                        ->getQuery()
+                        ->getResult();
     }
-    
+
     /**
      * Enregistrements dont un champ est égal à une valeur
      * ou tous les enregistrements si la valeur est vide
@@ -60,19 +57,32 @@ class VisiteRepository extends ServiceEntityRepository
      * @return Visite[]
      */
     public function findByEqualValue($champ, $valeur): array {
-        if($valeur=="") {
+        if ($valeur == "") {
             return $this->createQueryBuilder('v') //alias de la table
-                    ->orderBy('v.' .$champ, 'ASC')
-                    ->getQuery()
-                    ->getResult();
-        }else{
+                            ->orderBy('v.' . $champ, 'ASC')
+                            ->getQuery()
+                            ->getResult();
+        } else {
             return $this->createQueryBuilder('v') //alias de la table
-                    ->where('v.'.$champ.'=:valeur')
-                    ->setParameter('valeur', $valeur)
-                    ->orderBy('v.datecreation', 'DESC')
-                    ->getQuery()
-                    ->getResult();
+                            ->where('v.' . $champ . '=:valeur')
+                            ->setParameter('valeur', $valeur)
+                            ->orderBy('v.datecreation', 'DESC')
+                            ->getQuery()
+                            ->getResult();
         }
+    }
+
+    /**
+     * Derniers enregistrements selon un nombre donné
+     * @param type $number
+     * @return Visite[]
+     */
+    public function findLast($number): array {
+        return $this->createQueryBuilder('v')
+                        ->orderBy('v.datecreation', 'DESC')
+                        ->setMaxResults($number)
+                        ->getQuery()
+                        ->getResult();
     }
 
 //    /**
@@ -89,7 +99,7 @@ class VisiteRepository extends ServiceEntityRepository
 //            ->getResult()
 //        ;
 //    }
-
+//    
 //    public function findOneBySomeField($value): ?Visite
 //    {
 //        return $this->createQueryBuilder('v')
